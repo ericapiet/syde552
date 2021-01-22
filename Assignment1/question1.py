@@ -41,6 +41,7 @@ delta_w = lambda x, y_desired, y_output: gamma*x*(y_desired - y_output)
 def change_weight(df):
     weights[0] += delta_w(df.f_1, df.labels, df.outputs)
     weights[1] += delta_w(df.f_2, df.labels, df.outputs)
+    #print(weights)
 
 
 def perceptron(df, weights, gamma, bias):
@@ -58,7 +59,6 @@ def perceptron(df, weights, gamma, bias):
     
 #%% Training
 
-
 gamma = 0.01
 bias = -1
 steps = range(300)
@@ -67,13 +67,16 @@ fraction_correct_graph = []
 # Run 10 times
 for i in range(10):
 
-    weights = [random(), random()]
+    weights = [0, 0]
     fraction_correct_steps = [] 
-   
+    epoch = training_df.sample(frac=1)
+
     for ii in range(300):
-        epoch = training_df.sample(frac=1)
+        
+        #print(epoch)
         training_output, new_weights = perceptron(epoch, weights, gamma, bias)
         
+        #update the weights
         weights = new_weights
         
         # determine fraction of correct outputs
@@ -82,7 +85,7 @@ for i in range(10):
         
         fraction_correct_steps.append(is_correct.sum()/100)
             
-        fraction_correct_graph.append(fraction_correct_steps)
+    fraction_correct_graph.append(fraction_correct_steps)
     
     print(fraction_correct_steps[-1])
 
