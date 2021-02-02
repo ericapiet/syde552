@@ -33,51 +33,51 @@ training_df.labels = labels
 activation_fun = lambda x: 0 if x < 0 else 1
 
 input_fun = lambda x, w: activation_fun(
-    bias + x[0]*weights[0] + x[1]*weights[1])
+    BIAS + x[0]*w[0] + x[1]*w[1])
 
-delta_w = lambda x, y_desired, y_output: gamma*x*(y_desired - y_output)
+delta_w = lambda x, y_desired, y_output: GAMMA*x*(y_desired - y_output)
 
 
 def change_weight(df):
+    global weights
     weights[0] += delta_w(df.f_1, df.labels, df.outputs)
     weights[1] += delta_w(df.f_2, df.labels, df.outputs)
     #print(weights)
 
 
-def perceptron(df, weights, gamma, bias):
-    
+def perceptron(df, w):
+
     #produce predicted output
     df.outputs = training_df.apply(
         lambda x: input_fun(
-            np.array([x.f_1, x.f_2]), weights), axis=1)
+            np.array([x.f_1, x.f_2]), w), axis=1)
     
     # adjust the weights
     df.apply(lambda x: change_weight(x), axis=1)
     
-    return df, weights
+    return df
     
     
 #%% Training
 
-gamma = 0.01
-bias = -1
+GAMMA = 0.01
+BIAS = -1
 steps = range(300)
 fraction_correct_graph = []
+num_runs = 10
    
 # Run 10 times
-for i in range(10):
-
+for i in range(num_runs):
+    
     weights = [0, 0]
     fraction_correct_steps = [] 
     epoch = training_df.sample(frac=1)
+    #print(epoch)
 
     for ii in range(300):
-        
-        #print(epoch)
-        training_output, new_weights = perceptron(epoch, weights, gamma, bias)
-        
-        #update the weights
-        weights = new_weights
+        #print("before: %ls "%weights)
+        training_output = perceptron(epoch, weights)
+        #print("after: %ls "%weights)
         
         # determine fraction of correct outputs
         is_correct = training_output.apply(
@@ -86,15 +86,16 @@ for i in range(10):
         fraction_correct_steps.append(is_correct.sum()/100)
             
     fraction_correct_graph.append(fraction_correct_steps)
+    #print(training_output)
     
-    print(fraction_correct_steps[-1])
+    #print(fraction_correct_steps[-1])
 
 
 #%% Plot
 
-for i in range(10):
-    plt.figure(i)
-    plt.scatter(steps, fraction_correct_graph[i])
+for i in range(num_runs):
+    #plt.figure(i)
+    plt.plot(steps, fraction_correct_graph[i], alpha=0.6)
 
 
 
