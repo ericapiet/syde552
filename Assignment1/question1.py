@@ -17,7 +17,7 @@ from random import random
 
 #%% Load Data
 filename = os.path.abspath(
-    r"C:\Users\erica\Documents\syde552\Assignment1\assignment1-data\perceptron-data.pkl")
+    r"C:\Users\erica\Documents\epietroniro\syde552\Assignment1\assignment1-data\perceptron-data.pkl")
 data = pickle.load(open(filename, 'rb'), encoding='latin1')
 labels = data['labels'].astype(np.int)
 vectors = data['vectors']
@@ -48,7 +48,7 @@ def change_weight(df):
 def perceptron(df, w):
 
     #produce predicted output
-    df.outputs = training_df.apply(
+    df.outputs = df.apply(
         lambda x: input_fun(
             np.array([x.f_1, x.f_2]), w), axis=1)
     
@@ -57,7 +57,8 @@ def perceptron(df, w):
     
     return df
     
-    
+#weights = [0, 0]
+
 #%% Training
 
 GAMMA = 0.01
@@ -65,16 +66,16 @@ BIAS = -1
 steps = range(300)
 fraction_correct_graph = []
 num_runs = 10
-   
+
 # Run 10 times
 for i in range(num_runs):
     
     weights = [0, 0]
     fraction_correct_steps = [] 
-    epoch = training_df.sample(frac=1)
+    epoch = training_df.sample(frac=1).copy()
     #print(epoch)
 
-    for ii in range(300):
+    for ii in steps:
         #print("before: %ls "%weights)
         training_output = perceptron(epoch, weights)
         #print("after: %ls "%weights)
@@ -94,8 +95,12 @@ for i in range(num_runs):
 #%% Plot
 
 for i in range(num_runs):
-    #plt.figure(i)
+    plt.figure(i)
     plt.plot(steps, fraction_correct_graph[i], alpha=0.6)
+
+plt.title("Q1 - Fraction correct vs. number of runs")
+plt.xlabel("# of Runs")
+plt.ylabel("Fraction Correct")
 
 
 
